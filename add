@@ -1,0 +1,33 @@
+#!/bin/bash
+
+TODO_FILE="todo.txt"
+touch "$TODO_FILE"
+
+# Default offset in days if no due date provided
+DEFAULT_DUE_DAYS=0
+
+# Options
+priority=""
+while getopts "p:" opt; do
+  case $opt in
+    p) priority="($OPTARG)" ;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 [-p A] <task description> [+project] [@context] [due:YYYY-MM-DD]"
+  exit 1
+fi
+
+created=$(date +%F)
+task="$created ${priority:+$priority }$*"
+
+# If no due: specified, add default
+if ! echo "$task" | grep -q "due:[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}"; then
+  default_due=$(date -d "+$DEFAULT_DUE_DAYS days" +%F 2>/dev/null || date -v+${DEFAULT_DUE_DAYS}d +%F)
+  task="$task due:$default_due"
+fi
+
+echo "$task" >> "$TODO_FILE"
+echo "✅ Added: $task"
