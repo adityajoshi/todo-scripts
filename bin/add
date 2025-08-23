@@ -77,7 +77,7 @@ EOF
 }
 
 # Configuration
-TODO_FILE="todo.txt"
+#TODO_FILE="todo.txt"
 DEFAULT_DUE_DAYS="${DEFAULT_DUE_DAYS:-0}"
 
 # Create todo file if it doesn't exist

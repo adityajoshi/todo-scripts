@@ -96,7 +96,7 @@ EOF
 }
 
 # Configuration
-TODO_FILE="todo.txt"
+#TODO_FILE="todo.txt"
 TODAY=$(date +%Y-%m-%d)
 SHOW_UPCOMING_DAYS="${SHOW_UPCOMING_DAYS:-7}"
 SHOW_PRIORITY="${SHOW_PRIORITY:-true}"
@@ -376,14 +376,14 @@ else
 fi
 
 # Upcoming tasks (if not showing all)
-if [[ "$show_all" != "true" ]]; then
-  echo -e "\n${BLUE}🔮 Upcoming (next $SHOW_UPCOMING_DAYS days):${NC}"
-  if [[ $upcoming_count -eq 0 ]]; then
-    echo "  No upcoming tasks"
-  else
-    print_table "upcoming" "$sort_mode"
-  fi
-fi
+# if [[ "$show_all" != "true" ]]; then
+#   echo -e "\n${BLUE}🔮 Upcoming (next $SHOW_UPCOMING_DAYS days):${NC}"
+#   if [[ $upcoming_count -eq 0 ]]; then
+#     echo "  No upcoming tasks"
+#   else
+#     print_table "upcoming" "$sort_mode"
+#   fi
+# fi
 
 # Show all tasks if requested
 if [[ "$show_all" == "true" ]]; then

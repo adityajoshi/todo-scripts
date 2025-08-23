@@ -85,10 +85,10 @@ EOF
 }
 
 # Configuration
-TODO_FILE="todo.txt"
+#TODO_FILE="todo.txt"
 BACKUP_DIR="${MD_BACKUP_DIR:-.todo-backups}"
 REQUIRE_CONFIRM="${MD_CONFIRM:-true}"
-CREATE_BACKUP="${MD_BACKUP:-true}"
+CREATE_BACKUP="${MD_BACKUP:-false}"
 
 # Parse command line options
 preview_mode=false
