@@ -37,35 +37,52 @@ USAGE:
   td [OPTIONS]
 
 DESCRIPTION:
-  Display a dashboard of your todo.txt tasks, showing today's tasks and overdue items
-  in a tabular format with line numbers for easy reference.
+  Display a dashboard of your todo.txt tasks, showing today's tasks, overdue items,
+  and upcoming tasks in a tabular format with line numbers for easy reference.
 
 OPTIONS:
-  -h, --help    Show this help message
+  -a, --all        Show all tasks (including future ones)
+  -p, --priority   Sort by priority (A-Z)
+  -d, --due        Sort by due date
+  -c, --count      Show only task counts
+  -h, --help       Show this help message
+
+CONFIGURATION:
+  SHOW_UPCOMING_DAYS  Number of days to show upcoming tasks (default: 7)
+  SHOW_PRIORITY       Show priority indicators (default: true)
+  SHOW_COLORS         Enable color output (default: true)
 
 OUTPUT:
-  The dashboard shows two sections:
+  The dashboard shows three sections:
   • 📌 Today: Tasks due today
   • ⏰ Overdue: Tasks past their due date
+  • 🔮 Upcoming: Tasks due in the next few days
 
   Each task is displayed with:
   • Line: Line number in todo.txt (for use with 'md' command)
   • Created: Date when task was created
   • Due Date: When the task is due
+  • Priority: Task priority (A-Z) if set
   • Task: The task description
 
 EXAMPLE:
   ==== TASK DASHBOARD (2024-01-15) ====
+  📊 Summary: 3 today, 1 overdue, 2 upcoming
 
   📌 Today:
-  Line   | Created    | Due Date     | Task
+  Line   | Created    | Due Date     | Priority | Task
   ---------------------------------------------------------------------------------------------
-  3      | 2024-01-10 | 2024-01-15   | Review project proposal due:2024-01-15
+  3      | 2024-01-10 | 2024-01-15   | A        | Review project proposal due:2024-01-15
 
   ⏰ Overdue:
-  Line   | Created    | Due Date     | Task
+  Line   | Created    | Due Date     | Priority | Task
   ---------------------------------------------------------------------------------------------
-  1      | 2024-01-05 | 2024-01-10   | Send weekly report due:2024-01-10
+  1      | 2024-01-05 | 2024-01-10   |          | Send weekly report due:2024-01-10
+
+  🔮 Upcoming:
+  Line   | Created    | Due Date     | Priority | Task
+  ---------------------------------------------------------------------------------------------
+  4      | 2024-01-12 | 2024-01-18   | B        | Prepare presentation due:2024-01-18
 
 FILES:
   todo.txt    Task file (created automatically if it doesn't exist)
@@ -78,62 +95,298 @@ For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF
 }
 
-# Check for help flags
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-  show_help
-  exit 0
-fi
-
+# Configuration
 TODO_FILE="todo.txt"
 TODAY=$(date +%Y-%m-%d)
+SHOW_UPCOMING_DAYS="${SHOW_UPCOMING_DAYS:-7}"
+SHOW_PRIORITY="${SHOW_PRIORITY:-true}"
+SHOW_COLORS="${SHOW_COLORS:-false}"
 
+# Color codes (if enabled)
+if [[ "$SHOW_COLORS" == "true" ]]; then
+  RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[1;33m'
+  BLUE='\033[0;34m'
+  PURPLE='\033[0;35m'
+  BOLD='\033[1m'
+  NC='\033[0m' # No Color
+else
+  RED=''; GREEN=''; YELLOW=''; BLUE=''; PURPLE=''; BOLD=''; NC=''
+fi
+
+# Parse command line options
+show_all=false
+sort_by_priority=false
+sort_by_due=false
+show_count_only=false
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -a|--all)
+      show_all=true
+      shift
+      ;;
+    -p|--priority)
+      sort_by_priority=true
+      shift
+      ;;
+    -d|--due)
+      sort_by_due=true
+      shift
+      ;;
+    -c|--count)
+      show_count_only=true
+      shift
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    *)
+      echo "❌ Error: Unknown option: $1" >&2
+      echo "Use '$0 -h' for help." >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Check if todo file exists
 if [ ! -f "$TODO_FILE" ]; then
-  echo "No todo.txt file found at $TODO_FILE"
+  echo "❌ Error: No todo.txt file found at $TODO_FILE" >&2
+  echo "💡 Tip: Use 'add' command to create your first task." >&2
   exit 1
 fi
 
+# Check if file is empty
+if [ ! -s "$TODO_FILE" ]; then
+  echo "📝 No tasks found in $TODO_FILE"
+  echo "💡 Tip: Use 'add \"Your task\"' to add your first task."
+  exit 0
+fi
+
+# Calculate upcoming date
+upcoming_date=$(date -d "+$SHOW_UPCOMING_DAYS days" +%Y-%m-%d 2>/dev/null || date -v+${SHOW_UPCOMING_DAYS}d +%Y-%m-%d)
+
+# Enhanced print_table function with better parsing and sorting
 print_table() {
-  # Args: filter_mode
+  # Args: filter_mode [sort_mode]
   mode=$1
-  awk -v today="$TODAY" -v mode="$mode" '
+  sort_mode="${2:-none}"
+  
+  # Create temporary file for sorting
+  temp_file=$(mktemp)
+  
+  awk -v today="$TODAY" -v upcoming="$upcoming_date" -v mode="$mode" -v show_priority="$SHOW_PRIORITY" '
     function print_header() {
-      printf "\n%-6s | %-10s | %-12s | %s\n", "Line", "Created", "Due Date", "Task"
-      print "---------------------------------------------------------------------------------------------"
+      if (show_priority == "true") {
+        printf "\n%-6s | %-10s | %-12s | %-8s | %s\n", "Line", "Created", "Due Date", "Priority", "Task"
+        print "--------------------------------------------------------------------------------------------------------"
+      } else {
+        printf "\n%-6s | %-10s | %-12s | %s\n", "Line", "Created", "Due Date", "Task"
+        print "---------------------------------------------------------------------------------------------"
+      }
     }
+    
+    function extract_priority(line) {
+      if (match(line, /\([A-Z]\)/)) {
+        return substr(line, RSTART+1, 1)
+      }
+      return ""
+    }
+    
+    function clean_task_text(line) {
+      # Remove created date prefix
+      if (line ~ /^[0-9]{4}-[0-9]{2}-[0-9]{2} /) {
+        sub(/^[0-9]{4}-[0-9]{2}-[0-9]{2} /, "", line)
+      }
+      # Remove priority
+      sub(/^\([A-Z]\) /, "", line)
+      # Remove completion prefix
+      sub(/^x [0-9]{4}-[0-9]{2}-[0-9]{2} /, "", line)
+      return line
+    }
+    
     {
       crea="-"
       due="-"
       line=NR
       txt=$0
+      priority=""
 
+      # Extract created date
       if ($1 ~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
         crea=$1
-        sub(/^[0-9]{4}-[0-9]{2}-[0-9]{2} /,"",txt)
       }
+      
+      # Extract due date
       if (match($0,/due:([0-9]{4}-[0-9]{2}-[0-9]{2})/,arr)) {
         due=arr[1]
       }
+      
+      # Extract priority
+      priority=extract_priority($0)
+      
+      # Clean task text
+      txt=clean_task_text($0)
 
+      # Only process non-completed tasks
       if ($0 !~ /^x /) {
         if (mode=="today" && due==today) {
-          if (!printed++) print_header()
-          printf "%-6s | %-8s | %-12s | %s\n", line, crea, due, txt
+          if (show_priority == "true") {
+            printf "%d|%s|%s|%s|%s\n", line, crea, due, priority, txt > "/tmp/td_temp"
+          } else {
+            printf "%d|%s|%s|%s\n", line, crea, due, txt > "/tmp/td_temp"
+          }
         }
         else if (mode=="overdue" && due!="-") {
           if (due < today) {
-            if (!printed++) print_header()
-            printf "%-6s | %-8s | %-12s | %s\n", line, crea, due, txt
+            if (show_priority == "true") {
+              printf "%d|%s|%s|%s|%s\n", line, crea, due, priority, txt > "/tmp/td_temp"
+            } else {
+              printf "%d|%s|%s|%s\n", line, crea, due, txt > "/tmp/td_temp"
+            }
+          }
+        }
+        else if (mode=="upcoming" && due!="-") {
+          if (due > today && due <= upcoming) {
+            if (show_priority == "true") {
+              printf "%d|%s|%s|%s|%s\n", line, crea, due, priority, txt > "/tmp/td_temp"
+            } else {
+              printf "%d|%s|%s|%s\n", line, crea, due, txt > "/tmp/td_temp"
+            }
+          }
+        }
+        else if (mode=="all") {
+          if (show_priority == "true") {
+            printf "%d|%s|%s|%s|%s\n", line, crea, due, priority, txt > "/tmp/td_temp"
+          } else {
+            printf "%d|%s|%s|%s\n", line, crea, due, txt > "/tmp/td_temp"
           }
         }
       }
     }
   ' "$TODO_FILE"
+  
+  # Sort if requested
+  if [[ -s /tmp/td_temp ]]; then
+    if [[ "$sort_mode" == "priority" ]]; then
+      sort -t'|' -k4,4 -k3,3 /tmp/td_temp > "$temp_file"
+    elif [[ "$sort_mode" == "due" ]]; then
+      sort -t'|' -k3,3 -k4,4 /tmp/td_temp > "$temp_file"
+    else
+      cp /tmp/td_temp "$temp_file"
+    fi
+    
+    # Print header and data
+    if [[ "$SHOW_PRIORITY" == "true" ]]; then
+      echo
+      printf "%-6s | %-10s | %-12s | %-8s | %s\n" "Line" "Created" "Due Date" "Priority" "Task"
+      echo "--------------------------------------------------------------------------------------------------------"
+      while IFS='|' read -r line crea due priority txt; do
+        printf "%-6s | %-10s | %-12s | %-8s | %s\n" "$line" "$crea" "$due" "$priority" "$txt"
+      done < "$temp_file"
+    else
+      echo
+      printf "%-6s | %-10s | %-12s | %s\n" "Line" "Created" "Due Date" "Task"
+      echo "---------------------------------------------------------------------------------------------"
+      while IFS='|' read -r line crea due txt; do
+        printf "%-6s | %-10s | %-12s | %s\n" "$line" "$crea" "$due" "$txt"
+      done < "$temp_file"
+    fi
+  fi
+  
+  # Cleanup
+  rm -f /tmp/td_temp "$temp_file"
 }
 
-echo "==== TASK DASHBOARD ($TODAY) ===="
+# Count tasks function
+count_tasks() {
+  mode=$1
+  count=$(awk -v today="$TODAY" -v upcoming="$upcoming_date" -v mode="$mode" '
+    {
+      due="-"
+      if (match($0,/due:([0-9]{4}-[0-9]{2}-[0-9]{2})/,arr)) {
+        due=arr[1]
+      }
+      if ($0 !~ /^x /) {
+        if (mode=="today" && due==today) count++
+        else if (mode=="overdue" && due!="-") {
+          if (due < today) count++
+        }
+        else if (mode=="upcoming" && due!="-") {
+          if (due > today && due <= upcoming) count++
+        }
+        else if (mode=="all") count++
+      }
+    }
+    END { print count }
+  ' "$TODO_FILE")
+  echo "$count"
+}
 
-echo -e "\n📌 Today:"
-print_table "today" || echo "  No tasks for today"
+# Main execution
+if [[ "$show_count_only" == "true" ]]; then
+  today_count=$(count_tasks "today")
+  overdue_count=$(count_tasks "overdue")
+  upcoming_count=$(count_tasks "upcoming")
+  all_count=$(count_tasks "all")
+  
+  echo "📊 Task Summary:"
+  echo "  Today: $today_count"
+  echo "  Overdue: $overdue_count"
+  echo "  Upcoming: $upcoming_count"
+  echo "  Total: $all_count"
+  exit 0
+fi
 
-echo -e "\n⏰ Overdue:"
-print_table "overdue" || echo "  No overdue tasks"
+# Determine sort mode
+sort_mode="none"
+if [[ "$sort_by_priority" == "true" ]]; then
+  sort_mode="priority"
+elif [[ "$sort_by_due" == "true" ]]; then
+  sort_mode="due"
+fi
+
+echo "${BOLD}==== TASK DASHBOARD ($TODAY) ====${NC}"
+
+# Show summary
+today_count=$(count_tasks "today")
+overdue_count=$(count_tasks "overdue")
+upcoming_count=$(count_tasks "upcoming")
+
+if [[ $today_count -gt 0 || $overdue_count -gt 0 || $upcoming_count -gt 0 ]]; then
+  echo "📊 Summary: $today_count today, $overdue_count overdue, $upcoming_count upcoming"
+fi
+
+# Today's tasks
+echo -e "\n${GREEN}📌 Today:${NC}"
+if [[ $today_count -eq 0 ]]; then
+  echo "  No tasks for today"
+else
+  print_table "today" "$sort_mode"
+fi
+
+# Overdue tasks
+echo -e "\n${RED}⏰ Overdue:${NC}"
+if [[ $overdue_count -eq 0 ]]; then
+  echo "  No overdue tasks"
+else
+  print_table "overdue" "$sort_mode"
+fi
+
+# Upcoming tasks (if not showing all)
+if [[ "$show_all" != "true" ]]; then
+  echo -e "\n${BLUE}🔮 Upcoming (next $SHOW_UPCOMING_DAYS days):${NC}"
+  if [[ $upcoming_count -eq 0 ]]; then
+    echo "  No upcoming tasks"
+  else
+    print_table "upcoming" "$sort_mode"
+  fi
+fi
+
+# Show all tasks if requested
+if [[ "$show_all" == "true" ]]; then
+  echo -e "\n${PURPLE}📋 All Tasks:${NC}"
+  print_table "all" "$sort_mode"
+fi
