@@ -1,4 +1,69 @@
 #!/bin/bash
+# todo-scripts: Mark Task as Done
+#
+# Usage:
+#   md <line_number>
+#
+# Marks the task at the given line number in todo.txt as completed.
+#
+# Example:
+#   md 3
+#     (Marks the task on line 3 as done)
+#
+# The todo.txt file should be in the current directory as "todo.txt".
+# For more, see: https://github.com/adityajoshi/todo-scripts
+
+show_help() {
+  cat << EOF
+todo-scripts: Mark Task as Done
+
+USAGE:
+  md [OPTIONS] <line_number>
+
+DESCRIPTION:
+  Mark a task as completed by its line number in the todo.txt file.
+  The task will be prefixed with "x YYYY-MM-DD" to indicate completion.
+
+OPTIONS:
+  -h, --help    Show this help message
+
+ARGUMENTS:
+  line_number   The line number of the task to mark as done (required)
+
+EXAMPLES:
+  # Mark task on line 3 as complete
+  md 3
+
+  # Mark task on line 1 as complete
+  md 1
+
+OUTPUT:
+  Success: ✅ Marked as done: x 2024-01-15 2024-01-10 Task description due:2024-01-15
+  Already done: ⚠️  Task on line 3 is already marked done.
+  Error: ❌ Invalid line number.
+
+ERROR HANDLING:
+  • Invalid line number: Shows error if line_number is not a number
+  • File not found: Shows error if todo.txt doesn't exist
+  • Out of range: Shows error if line_number exceeds file length
+  • Already done: Shows warning if task is already marked complete
+
+FILES:
+  todo.txt    Task file (modified in place)
+
+SEE ALSO:
+  td(1)  - Display task dashboard
+  add(1) - Add new tasks
+
+For more information, visit: https://github.com/adityajoshi/todo-scripts
+EOF
+}
+
+# Check for help flags
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
 
 TODO_FILE="todo.txt"
 lineno=$1
@@ -6,6 +71,8 @@ lineno=$1
 # Validate argument
 if ! [[ "$lineno" =~ ^[0-9]+$ ]]; then
   echo "❌ Invalid line number."
+  echo "Usage: $0 <line_number>"
+  echo "Use '$0 -h' for more information."
   exit 1
 fi
 

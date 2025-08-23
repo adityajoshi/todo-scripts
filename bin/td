@@ -1,5 +1,88 @@
 #!/bin/bash
-# Sectioned todo.txt dashboard with due: and tabular format
+# todo-scripts: Task Dashboard
+# 
+# Usage:
+#   td
+#
+# Shows a dashboard of your todo.txt tasks, focusing on:
+#   - 📌 Today's tasks (due: today)
+#   - ⏰ Overdue tasks (due: before today)
+#
+# The todo.txt file should be in the current directory as "todo.txt".
+#
+# Output columns:
+#   Line   | Created    | Due Date     | Task
+#
+# Example:
+#   ==== TASK DASHBOARD (2024-01-15) ====
+#
+#   📌 Today:
+#   Line   | Created    | Due Date     | Task
+#   ---------------------------------------------------------------------------------------------
+#   3      | 2024-01-10 | 2024-01-15   | Review project proposal due:2024-01-15
+#
+#   ⏰ Overdue:
+#   Line   | Created    | Due Date     | Task
+#   ---------------------------------------------------------------------------------------------
+#   1      | 2024-01-05 | 2024-01-10   | Send weekly report due:2024-01-10
+#
+# Mark tasks as completed using your preferred editor or the companion scripts.
+# For more, see: https://github.com/adityajoshi/todo-scripts
+
+show_help() {
+  cat << EOF
+todo-scripts: Task Dashboard
+
+USAGE:
+  td [OPTIONS]
+
+DESCRIPTION:
+  Display a dashboard of your todo.txt tasks, showing today's tasks and overdue items
+  in a tabular format with line numbers for easy reference.
+
+OPTIONS:
+  -h, --help    Show this help message
+
+OUTPUT:
+  The dashboard shows two sections:
+  • 📌 Today: Tasks due today
+  • ⏰ Overdue: Tasks past their due date
+
+  Each task is displayed with:
+  • Line: Line number in todo.txt (for use with 'md' command)
+  • Created: Date when task was created
+  • Due Date: When the task is due
+  • Task: The task description
+
+EXAMPLE:
+  ==== TASK DASHBOARD (2024-01-15) ====
+
+  📌 Today:
+  Line   | Created    | Due Date     | Task
+  ---------------------------------------------------------------------------------------------
+  3      | 2024-01-10 | 2024-01-15   | Review project proposal due:2024-01-15
+
+  ⏰ Overdue:
+  Line   | Created    | Due Date     | Task
+  ---------------------------------------------------------------------------------------------
+  1      | 2024-01-05 | 2024-01-10   | Send weekly report due:2024-01-10
+
+FILES:
+  todo.txt    Task file (created automatically if it doesn't exist)
+
+SEE ALSO:
+  add(1) - Add new tasks
+  md(1)  - Mark tasks as completed
+
+For more information, visit: https://github.com/adityajoshi/todo-scripts
+EOF
+}
+
+# Check for help flags
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
 
 TODO_FILE="todo.txt"
 TODAY=$(date +%Y-%m-%d)

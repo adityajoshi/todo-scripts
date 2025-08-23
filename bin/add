@@ -1,4 +1,77 @@
 #!/bin/bash
+# todo-scripts: Add Task
+#
+# Usage:
+#   add "Task description" [+project] [@context] [due:YYYY-MM-DD]
+#
+# Options:
+#   -p <priority>   Set priority (A-Z), e.g. -p A
+#
+# Examples:
+#   add "Buy groceries"
+#   add -p B "Review project proposal" +work due:2024-01-20
+#   add "Call Alice" @phone +personal
+#
+# If no due date is provided, the default is today.
+# The todo.txt file should be in the current directory as "todo.txt".
+#
+# Mark tasks as completed using your preferred editor or the companion scripts.
+# For more, see: https://github.com/adityajoshi/todo-scripts
+
+show_help() {
+  cat << EOF
+todo-scripts: Add Task
+
+USAGE:
+  add [OPTIONS] "TASK DESCRIPTION" [+project] [@context] [due:YYYY-MM-DD]
+
+DESCRIPTION:
+  Add a new task to your todo.txt file with automatic date stamping and
+  optional priority, project tags, context tags, and due dates.
+
+OPTIONS:
+  -p <priority>    Set priority level (A-Z), e.g. -p A for highest priority
+  -h, --help       Show this help message
+
+ARGUMENTS:
+  TASK DESCRIPTION  The task description (required)
+  +project          Project tag (optional)
+  @context          Context tag (optional)
+  due:YYYY-MM-DD    Due date in YYYY-MM-DD format (optional, defaults to today)
+
+EXAMPLES:
+  # Basic task
+  add "Buy groceries"
+
+  # Task with priority
+  add -p A "Important meeting"
+
+  # Task with project and context
+  add "Review code" +work @urgent
+
+  # Task with custom due date
+  add "Submit report" +work due:2024-01-20
+
+  # Complete example
+  add -p A "Prepare presentation" +work @meeting due:2024-01-18
+
+OUTPUT FORMAT:
+  Tasks are stored in todo.txt with the following format:
+  YYYY-MM-DD (PRIORITY) TASK DESCRIPTION +project @context due:YYYY-MM-DD
+
+  Example:
+  2024-01-15 (A) Prepare presentation +work @meeting due:2024-01-18
+
+FILES:
+  todo.txt    Task file (created automatically if it doesn't exist)
+
+SEE ALSO:
+  td(1) - Display task dashboard
+  md(1) - Mark tasks as completed
+
+For more information, visit: https://github.com/adityajoshi/todo-scripts
+EOF
+}
 
 TODO_FILE="todo.txt"
 touch "$TODO_FILE"
@@ -6,17 +79,26 @@ touch "$TODO_FILE"
 # Default offset in days if no due date provided
 DEFAULT_DUE_DAYS=0
 
+# Check for --help flag first (before getopts)
+if [[ "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
+
 # Options
 priority=""
-while getopts "p:" opt; do
+while getopts "p:h" opt; do
   case $opt in
     p) priority="($OPTARG)" ;;
+    h) show_help; exit 0 ;;
+    *) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
   esac
 done
 shift $((OPTIND-1))
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 [-p A] <task description> [+project] [@context] [due:YYYY-MM-DD]"
+  echo "Use '$0 -h' for more information."
   exit 1
 fi
 
