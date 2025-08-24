@@ -1,11 +1,40 @@
 #!/bin/bash
+# todo-scripts: Update Task Due Date
+
+# USAGE:
+#   rupd <task_line_number> <proposed_due_date>
+
+# DESCRIPTION:
+#   Updates the due date of a task in your todo.txt file by line number.
+
+# ARGUMENTS:
+#   <task_line_number>   The line number of the task to update (1-based)
+#   <proposed_due_date>  The new due date in YYYY-MM-DD format
+
+# OPTIONS:
+#   -h, --help           Show this help message
+
+# EXAMPLES:
+#   rupd 3 2025-09-15      # Change due date of task on line 3 to 2025-09-15
+
+# FILES:
+#   todo.txt             Task file (must exist in current directory)
+
+# SEE ALSO:
+#   ta(1)      - Add a new task
+#   tview(1)   - Display task dashboard
+#   tarc(1)    - Archive completed tasks
+
+# For more information, visit: https://github.com/adityajoshi/todo-scripts
+# EOF
+
 
 show_help() {
   cat <<EOF
 todo-scripts: Update Task Due Date
 
 USAGE:
-  rt <task_line_number> <proposed_due_date>
+  rupd <task_line_number> <proposed_due_date>
 
 DESCRIPTION:
   Updates the due date of a task in your todo.txt file by line number.
@@ -18,15 +47,15 @@ OPTIONS:
   -h, --help           Show this help message
 
 EXAMPLES:
-  rt 3 2025-09-15      # Change due date of task on line 3 to 2025-09-15
+  rupd 3 2025-09-15      # Change due date of task on line 3 to 2025-09-15
 
 FILES:
   todo.txt             Task file (must exist in current directory)
 
 SEE ALSO:
-  add(1)   - Add a new task
-  td(1)    - Display task dashboard
-  ar(1)    - Archive completed tasks
+  ta(1)      - Add a new task
+  tview(1)   - Display task dashboard
+  tarc(1)    - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF

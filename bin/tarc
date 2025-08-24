@@ -3,7 +3,7 @@
 # todo-scripts: Archive Completed Tasks
 
 # USAGE:
-#   ar
+#   tarc
 
 # DESCRIPTION:
 #   Moves all completed tasks (lines starting with 'x ') from todo.txt to done.txt.
@@ -16,13 +16,13 @@
 #   done.txt      Archive file for completed tasks (created if missing)
 
 # EXAMPLES:
-#   ar            # Archive all completed tasks
+#   tarc          # Archive all completed tasks
 
 # SEE ALSO:
-#   add(1)      -  Add a new task
-#   td(1)       -  Display task dashboard
-#   md(1)       -  Mark tasks as completed
-#   repeat(1)   -  Schedule recurring tasks
+#   ta(1)          -  Add a new task
+#   tview(1)       -  Display task dashboard
+#   tdone(1)       -  Mark tasks as completed
+#   trep(1)        -  Schedule recurring tasks
 
 # For more information, visit: https://github.com/adityajoshi/todo-scripts
 
@@ -31,7 +31,7 @@ show_help() {
 todo-scripts: Archive Completed Tasks
 
 USAGE:
-  ar
+  tarc
 
 DESCRIPTION:
   Moves all completed tasks (lines starting with 'x ') from todo.txt to done.txt.
@@ -44,13 +44,13 @@ FILES:
   done.txt      Archive file for completed tasks (created if missing)
 
 EXAMPLES:
-  ar            # Archive all completed tasks
+  tarc            # Archive all completed tasks
 
 SEE ALSO:
-  add(1)      -  Add a new task
-  td(1)       -  Display task dashboard
-  md(1)       -  Mark tasks as completed
-  repeat(1)   -  Schedule recurring tasks
+  ta(1)          -  Add a new task
+  tview(1)       -  Display task dashboard
+  tdone(1)       -  Mark tasks as completed
+  trep(1)        -  Schedule recurring tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF

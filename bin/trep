@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Usage: $0 [-p PRIORITY] "Task description" YYYY MM INTERVAL
+# Usage: trep [-p PRIORITY] "Task description" YYYY MM INTERVAL
 
 # Arguments:
 #   "Task description"   The task you want to add (quoted if it has spaces)
@@ -14,9 +14,9 @@ set -euo pipefail
 #   -h, --help           Show this help message
 
 # Examples:
-#   $0 -p A "Go cycling" 2025 09 daily
-#   $0 "Pay credit card bill" 2025 09 monthly
-#   $0 -p C "Team meeting" 2025 09 weekly
+#   trep -p A "Go cycling" 2025 09 daily
+#   trep "Pay credit card bill" 2025 09 monthly
+#   trep -p C "Team meeting" 2025 09 weekly
 
 # Notes:
 #   • If the given month/year is the current one, tasks start from today.
@@ -28,16 +28,16 @@ set -euo pipefail
 #   todo.txt    Task file (created automatically if it doesn't exist)
 
 # SEE ALSO:
-#   td(1) - Display task dashboard
-#   md(1) - Mark tasks as completed
-#   ad(1) - Add new tasks without repeating
-#   ar(1) - Archive completed tasks
+#   tview(1) - Display task dashboard
+#   tdone(1) - Mark tasks as completed
+#   ta(1)    - Add new tasks without repeating
+#   tarc(1)  - Archive completed tasks
 
 # For more information, visit: https://github.com/adityajoshi/todo-scripts
 
 show_help() {
   cat <<EOF
-Usage: $0 [-p PRIORITY] "Task description" YYYY MM INTERVAL
+Usage: trep [-p PRIORITY] "Task description" YYYY MM INTERVAL
 
 Arguments:
   "Task description"   The task you want to add (quoted if it has spaces)
@@ -50,9 +50,9 @@ Options:
   -h, --help           Show this help message
 
 Examples:
-  $0 -p A "Go cycling" 2025 09 daily
-  $0 "Pay credit card bill" 2025 09 monthly
-  $0 -p C "Team meeting" 2025 09 weekly
+  trep -p A "Go cycling" 2025 09 daily
+  trep "Pay credit card bill" 2025 09 monthly
+  trep -p C "Team meeting" 2025 09 weekly
 
 Notes:
   • If the given month/year is the current one, tasks start from today.
@@ -64,10 +64,10 @@ FILES:
   todo.txt    Task file (created automatically if it doesn't exist)
 
 SEE ALSO:
-  td(1) - Display task dashboard
-  md(1) - Mark tasks as completed
-  ad(1) - Add new tasks without repeating
-  ar(1) - Archive completed tasks
+  tview(1) - Display task dashboard
+  tdone(1) - Mark tasks as completed
+  ta(1)    - Add new tasks without repeating
+  tarc(1)  - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF

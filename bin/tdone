@@ -2,12 +2,12 @@
 # todo-scripts: Mark Task as Done
 #
 # Usage:
-#   md <line_number>
+#   tdone <line_number>
 #
 # Marks the task at the given line number in todo.txt as completed.
 #
 # Example:
-#   md 3
+#   tdone 3
 #     (Marks the task on line 3 as done)
 #
 # The todo.txt file should be in the current directory as "todo.txt".
@@ -18,7 +18,7 @@ show_help() {
 todo-scripts: Mark Task as Done
 
 USAGE:
-  md [OPTIONS] <line_number> [line_number2] [line_number3] ...
+  tdone [OPTIONS] <line_number> [line_number2] [line_number3] ...
 
 DESCRIPTION:
   Mark one or more tasks as completed by their line numbers in the todo.txt file.
@@ -36,23 +36,23 @@ ARGUMENTS:
 
 EXAMPLES:
   # Mark single task
-  md 3
+  tdone 3
 
   # Mark multiple tasks
-  md 1 3 5
+  tdone 1 3 5
 
   # Preview what would be marked
-  md -p 3
+  tdone -p 3
 
   # Unmark completed task
-  md -u 3
+  tdone -u 3
 
   # Mark with confirmation
-  md 3
+  tdone 3
   # Will show: "Mark task 'Review code' as done? [y/N]"
 
   # Force mark without confirmation
-  md -f 3
+  tdone -f 3
 
 OUTPUT:
   Success: ✅ Marked as done: Review code (line 3)
@@ -77,10 +77,10 @@ FILES:
   .todo-backups/        Backup directory (if enabled)
 
 SEE ALSO:
-  td(1)     - Display task dashboard
-  add(1)    - Add new tasks
-  repeat(1) - Schedule recurring tasks
-  ar(1)     - Archive completed tasks
+  tview(1)     - Display task dashboard
+  ta(1)        - Add new tasks
+  trep(1)      - Schedule recurring tasks
+  tarc(1)      - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF

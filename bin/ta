@@ -2,15 +2,15 @@
 # todo-scripts: Add Task
 #
 # Usage:
-#   add "Task description" [+project] [@context] [due:YYYY-MM-DD]
+#   ta "Task description" [+project] [@context] [due:YYYY-MM-DD]
 #
 # Options:
 #   -p <priority>   Set priority (A-Z), e.g. -p A
 #
 # Examples:
-#   add "Buy groceries"
-#   add -p B "Review project proposal" +work due:2024-01-20
-#   add "Call Alice" @phone +personal
+#   ta "Buy groceries"
+#   ta -p B "Review project proposal" +work due:2024-01-20
+#   ta "Call Alice" @phone +personal
 #
 # If no due date is provided, the default is today.
 # The todo.txt file should be in the current directory as "todo.txt".
@@ -23,7 +23,7 @@ show_help() {
 todo-scripts: Add Task
 
 USAGE:
-  add [OPTIONS] "TASK DESCRIPTION" [+project] [@context] [due:YYYY-MM-DD]
+  ta [OPTIONS] "TASK DESCRIPTION" [+project] [@context] [due:YYYY-MM-DD]
 
 DESCRIPTION:
   Add a new task to your todo.txt file with automatic date stamping and
@@ -41,19 +41,19 @@ ARGUMENTS:
 
 EXAMPLES:
   # Basic task
-  add "Buy groceries"
+  ta "Buy groceries"
 
   # Task with priority
-  add -p A "Important meeting"
+  ta -p A "Important meeting"
 
   # Task with project and context
-  add "Review code" +work @urgent
+  ta "Review code" +work @urgent
 
   # Task with custom due date
-  add "Submit report" +work due:2024-01-20
+  ta "Submit report" +work due:2024-01-20
 
   # Complete example
-  add -p A "Prepare presentation" +work @meeting due:2024-01-18
+  ta -p A "Prepare presentation" +work @meeting due:2024-01-18
 
 OUTPUT FORMAT:
   Tasks are stored in todo.txt with the following format:
@@ -69,10 +69,10 @@ FILES:
   todo.txt    Task file (created automatically if it doesn't exist)
 
 SEE ALSO:
-  td(1) - Display task dashboard
-  md(1) - Mark tasks as completed
-  repeat(1) - Schedule recurring tasks
-  ar(1) - Archive completed tasks
+  tview(1) - Display task dashboard
+  tdone(1) - Mark tasks as completed
+  trep(1)  - Schedule recurring tasks
+  tarc(1)  - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF

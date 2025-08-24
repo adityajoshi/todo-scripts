@@ -20,13 +20,14 @@ Built around the [`todo.txt`](https://github.com/todotxt/todo.txt) convention wi
 
 The `bin` folder contains the following scripts:
 
-| Script   | Description                                                                 |
-|----------|-----------------------------------------------------------------------------|
-| `td`     | Shows a dashboard of today's and overdue tasks in a tabular format.         |
-| `add`    | Adds a new task with optional priority, project, context, due date, and repeat interval. |
-| `md`     | Marks a task as completed by its line number.                               |
-| `ar`     | Archives all completed tasks (lines starting with `x `) to `done.txt`.      |
-| `repeat` | Schedules recurring tasks (daily, weekly, monthly) based on repeat tags.    |
+| Script    | Description                                                                 |
+|-----------|-----------------------------------------------------------------------------|
+| `tview`   | Shows a dashboard of today's and overdue tasks in a tabular format.         |
+| `ta`      | Adds a new task with optional priority, project, context, due date, and repeat interval. |
+| `tdone`   | Marks a task as completed by its line number.                               |
+| `tarc`    | Archives all completed tasks (lines starting with `x `) to `done.txt`.      |
+| `trep`    | Schedules recurring tasks (daily, weekly, monthly) based on repeat tags.    |
+| `tupd`    | Updates the due date of a task by line number.                              |
 
 ---
 
@@ -61,11 +62,12 @@ The `bin` folder contains the following scripts:
    
    **Option B: Create symbolic links:**
    ```bash
-   sudo ln -s /path/to/todo-scripts/bin/td /usr/local/bin/td
-   sudo ln -s /path/to/todo-scripts/bin/add /usr/local/bin/add
-   sudo ln -s /path/to/todo-scripts/bin/md /usr/local/bin/md
-   sudo ln -s /path/to/todo-scripts/bin/ar /usr/local/bin/ar
-   sudo ln -s /path/to/todo-scripts/bin/repeat /usr/local/bin/repeat
+   sudo ln -s /path/to/todo-scripts/bin/tview /usr/local/bin/tview
+   sudo ln -s /path/to/todo-scripts/bin/ta /usr/local/bin/ta
+   sudo ln -s /path/to/todo-scripts/bin/tdone /usr/local/bin/tdone
+   sudo ln -s /path/to/todo-scripts/bin/tarc /usr/local/bin/tarc
+   sudo ln -s /path/to/todo-scripts/bin/trep /usr/local/bin/trep
+   sudo ln -s /path/to/todo-scripts/bin/tupd /usr/local/bin/tupd
    ```
 
 3. **Reload your shell configuration:**
@@ -77,19 +79,19 @@ The `bin` folder contains the following scripts:
 
 Test that the scripts are working:
 ```bash
-td --help
+tview --help
 ```
 
 You should see usage information for the todo dashboard script.
 
 ## 🚀 Usage
 
-### Dashboard View (`td`)
+### Dashboard View (`tview`)
 
 Display your task dashboard with today's tasks and overdue items:
 
 ```bash
-td
+tview
 ```
 
 **What it shows:**
@@ -112,12 +114,12 @@ Line   | Created    | Due Date     | Task
 1      | 2024-01-05 | 2024-01-10   | Send weekly report due:2024-01-10
 ```
 
-### Add Tasks (`add`)
+### Add Tasks (`ta`)
 
 Add new tasks to your todo list:
 
 ```bash
-add "Task description" [+project] [@context] [due:YYYY-MM-DD] [repeat:daily|weekly|monthly]
+ta "Task description" [+project] [@context] [due:YYYY-MM-DD] [repeat:daily|weekly|monthly]
 ```
 
 **Options:**
@@ -131,36 +133,36 @@ add "Task description" [+project] [@context] [due:YYYY-MM-DD] [repeat:daily|week
 **Examples:**
 ```bash
 # Basic task
-add "Buy groceries"
+ta "Buy groceries"
 
 # With priority
-add -p A "Important meeting"
+ta -p A "Important meeting"
 
 # With project and context
-add "Review code" +work @urgent
+ta "Review code" +work @urgent
 
 # With custom due date
-add "Submit report" +work due:2024-01-20
+ta "Submit report" +work due:2024-01-20
 
 # With repeat interval
-add -r weekly "Take out trash"
+ta -r weekly "Take out trash"
 
 # Complete example
-add -p A -r monthly "Prepare report" +work @meeting due:2024-01-18
+ta -p A -r monthly "Prepare report" +work @meeting due:2024-01-18
 ```
 
-### Mark Tasks Complete (`md`)
+### Mark Tasks Complete (`tdone`)
 
 Mark a task as completed by its line number:
 
 ```bash
-md <line_number>
+tdone <line_number>
 ```
 
 **Example:**
 ```bash
 # Mark task on line 3 as complete
-md 3
+tdone 3
 ```
 
 **Output:**
@@ -168,12 +170,12 @@ md 3
 ✅ Marked as done: x 2024-01-15 2024-01-10 Review project proposal due:2024-01-15
 ```
 
-### Archive Completed Tasks (`ar`)
+### Archive Completed Tasks (`tarc`)
 
 Move all completed tasks (lines starting with `x `) from `todo.txt` to `done.txt`:
 
 ```bash
-ar
+tarc
 ```
 
 **Output:**
@@ -181,15 +183,28 @@ ar
 ✅ Archived 2 completed task(s) to done.txt.
 ```
 
-### Recurring Tasks (`repeat`)
+### Recurring Tasks (`trep`)
 
 Automatically add new instances of recurring tasks based on `repeat:daily`, `repeat:weekly`, or `repeat:monthly` tags:
 
 ```bash
-repeat
+trep
 ```
 
 This script scans your `todo.txt` for tasks with a repeat tag and due date, and adds the next occurrence when the current one is completed.
+
+### Update Task Due Date (`tupd`)
+
+Update the due date of a task by its line number:
+
+```bash
+tupd <task_line_number> <proposed_due_date>
+```
+
+**Example:**
+```bash
+tupd 5 2025-09-15
+```
 
 ---
 
@@ -199,20 +214,23 @@ All scripts support traditional help flags:
 
 ```bash
 # Get help for any script
-td -h
-td --help
+tview -h
+tview --help
 
-add -h
-add --help
+ta -h
+ta --help
 
-md -h
-md --help
+tdone -h
+tdone --help
 
-ar -h
-ar --help
+tarc -h
+tarc --help
 
-repeat -h
-repeat --help
+trep -h
+trep --help
+
+tupd -h
+tupd --help
 ```
 
 **Help output includes:**
@@ -225,17 +243,18 @@ repeat --help
 **Alternative help methods:**
 1. **Check script usage** by running without arguments:
    ```bash
-   add
-   # Shows: Usage: add [-p A] <task description> [+project] [@context] [due:YYYY-MM-DD]
+   ta
+   # Shows: Usage: ta [-p A] <task description> [+project] [@context] [due:YYYY-MM-DD]
    ```
 
 2. **View script contents** to understand functionality:
    ```bash
-   cat bin/td
-   cat bin/add
-   cat bin/md
-   cat bin/ar
-   cat bin/repeat
+   cat bin/tview
+   cat bin/ta
+   cat bin/tdone
+   cat bin/tarc
+   cat bin/trep
+   cat bin/tupd
    ```
 
 3. **Check if todo.txt exists**:

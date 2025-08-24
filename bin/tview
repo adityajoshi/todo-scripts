@@ -2,7 +2,7 @@
 # todo-scripts: Task Dashboard
 # 
 # Usage:
-#   td
+#   tview
 #
 # Shows a dashboard of your todo.txt tasks, focusing on:
 #   - 📌 Today's tasks (due: today)
@@ -34,7 +34,7 @@ show_help() {
 todo-scripts: Task Dashboard
 
 USAGE:
-  td [OPTIONS]
+  tview [OPTIONS]
 
 DESCRIPTION:
   Display a dashboard of your todo.txt tasks, showing today's tasks, overdue items,
@@ -88,10 +88,10 @@ FILES:
   todo.txt    Task file (created automatically if it doesn't exist)
 
 SEE ALSO:
-  add(1)    - Add new tasks
-  md(1)     - Mark tasks as completed
-  repeat(1) - Schedule recurring tasks
-  ar(1)     - Archive completed tasks
+  ta(1)    - Add new tasks
+  tdone(1) - Mark tasks as completed
+  trep(1)  - Schedule recurring tasks
+  tarc(1)  - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF
