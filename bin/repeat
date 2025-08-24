@@ -80,24 +80,43 @@ if [[ $# -eq 0 ]]; then
   show_help
 fi
 
-while getopts ":p:-:" opt; do
+# Check for --help flag first (before getopts)
+if [[ "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
+
+validate_priority() {
+  local priority="$1"
+  if [[ ! "$priority" =~ ^[A-Z]$ ]]; then
+    echo "❌ Error: Priority must be a single letter A-Z, got: '$priority'" >&2
+    exit 1
+  fi
+}
+
+priority=""
+while getopts "p:h" opt; do
   case $opt in
-    p) PRIORITY="$OPTARG" ;;
-    -)
-      case $OPTARG in
-        help) show_help ;;
-        *) echo "Unknown option --$OPTARG"; exit 1 ;;
-      esac ;;
-    \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+    p) 
+      validate_priority "$OPTARG"
+      priority="($OPTARG)" 
+      ;;
+    h) show_help; exit 0 ;;
+    *) echo "❌ Error: Invalid option: -$OPTARG" >&2; exit 1 ;;
   esac
 done
-shift $((OPTIND -1))
+shift $((OPTIND-1))
 
 # Remaining args
 TASK=$1
-YEAR_NUM=$2
-MONTH_NUM=$3
+YEAR=$2
+MONTH=$3
 INTERVAL=$4
+
+# Strip leading zeros to avoid octal interpretation
+MONTH_NUM=$((10#$MONTH))
+YEAR_NUM=$((10#$YEAR))
+
 
 if [[ -z "$TASK" || -z "$YEAR_NUM" || -z "$MONTH_NUM" || -z "$INTERVAL" ]]; then
   echo "❌ Missing arguments. Run $0 --help"
@@ -115,6 +134,8 @@ fi
 
 # Validate year/month
 if ! [[ "$MONTH_NUM" =~ ^(0?[1-9]|1[0-2])$ && "$YEAR_NUM" =~ ^[0-9]{4}$ ]]; then
+  echo "$MONTH_NUM"
+  echo "$YEAR_NUM"
   echo "❌ Invalid month or year."
   exit 1
 fi
@@ -177,7 +198,7 @@ fi
 
 # Append
 for DATE in "${DATES[@]}"; do
-  printf "%s %s\n" "$DATE" "$TASK" >> "$TODO_FILE"
+  printf "%s  %s due:%s\n" "$TODAY" "$TASK" "$DATE" >> "$TODO_FILE"
 done
 
 echo "✅ Task(s) added successfully."

@@ -155,7 +155,7 @@ if [ $? -ne 0 ]; then
 fi
 
 created=$(date +%F)
-task="$created ${priority:+$priority }$task_description"
+task="$created  ${priority:+$priority }$task_description"
 
 # Check if due date is already specified in the task
 if echo "$task" | grep -q "due:[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}"; then
