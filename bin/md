@@ -77,8 +77,10 @@ FILES:
   .todo-backups/        Backup directory (if enabled)
 
 SEE ALSO:
-  td(1)  - Display task dashboard
-  add(1) - Add new tasks
+  td(1)     - Display task dashboard
+  add(1)    - Add new tasks
+  repeat(1) - Schedule recurring tasks
+  ar(1)     - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF

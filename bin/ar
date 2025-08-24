@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# todo-scripts: Archive Completed Tasks
+
+# USAGE:
+#   ar
+
+# DESCRIPTION:
+#   Moves all completed tasks (lines starting with 'x ') from todo.txt to done.txt.
+
+# OPTIONS:
+#   -h, --help    Show this help message
+
+# FILES:
+#   todo.txt      Task file (must exist in current directory)
+#   done.txt      Archive file for completed tasks (created if missing)
+
+# EXAMPLES:
+#   ar            # Archive all completed tasks
+
+# SEE ALSO:
+#   add(1)      -  Add a new task
+#   td(1)       -  Display task dashboard
+#   md(1)       -  Mark tasks as completed
+#   repeat(1)   -  Schedule recurring tasks
+
+# For more information, visit: https://github.com/adityajoshi/todo-scripts
+
+show_help() {
+  cat << EOF
+todo-scripts: Archive Completed Tasks
+
+USAGE:
+  ar
+
+DESCRIPTION:
+  Moves all completed tasks (lines starting with 'x ') from todo.txt to done.txt.
+
+OPTIONS:
+  -h, --help    Show this help message
+
+FILES:
+  todo.txt      Task file (must exist in current directory)
+  done.txt      Archive file for completed tasks (created if missing)
+
+EXAMPLES:
+  ar            # Archive all completed tasks
+
+SEE ALSO:
+  add(1)      -  Add a new task
+  td(1)       -  Display task dashboard
+  md(1)       -  Mark tasks as completed
+  repeat(1)   -  Schedule recurring tasks
+
+For more information, visit: https://github.com/adityajoshi/todo-scripts
+EOF
+}
+
+# Show help if requested
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
+
+
+if [[ ! -f "$TODO_FILE" ]]; then
+  echo "❌ $TODO_FILE not found."
+  exit 1
+fi
+
+# Count completed tasks
+count=$(grep -c '^x ' "$TODO_FILE")
+
+if (( count == 0 )); then
+  echo "No completed tasks to archive."
+  exit 0
+fi
+
+# Append completed tasks to done.txt
+grep '^x ' "$TODO_FILE" >> "$DONE_FILE"
+
+# Remove completed tasks from todo.txt
+sed -i '/^x /d' "$TODO_FILE"
+
+echo "✅ Archived $count completed task(s) to $DONE_FILE."
+

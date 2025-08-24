@@ -71,6 +71,8 @@ FILES:
 SEE ALSO:
   td(1) - Display task dashboard
   md(1) - Mark tasks as completed
+  repeat(1) - Schedule recurring tasks
+  ar(1) - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF

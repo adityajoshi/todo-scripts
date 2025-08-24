@@ -88,8 +88,10 @@ FILES:
   todo.txt    Task file (created automatically if it doesn't exist)
 
 SEE ALSO:
-  add(1) - Add new tasks
-  md(1)  - Mark tasks as completed
+  add(1)    - Add new tasks
+  md(1)     - Mark tasks as completed
+  repeat(1) - Schedule recurring tasks
+  ar(1)     - Archive completed tasks
 
 For more information, visit: https://github.com/adityajoshi/todo-scripts
 EOF
