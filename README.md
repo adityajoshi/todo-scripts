@@ -11,8 +11,24 @@ Built around the [`todo.txt`](https://github.com/todotxt/todo.txt) convention wi
   - Today's tasks
   - Overdue tasks
 - Tabular display of tasks with **Created** and **Due Date**.
+- Archive completed tasks to `done.txt`.
+- Support for recurring tasks (daily, weekly, monthly).
 - 100% plain text, no databases or cloud lock-in.
 - Designed to integrate seamlessly with Vim, shell, and git.
+
+## 📂 Scripts Overview
+
+The `bin` folder contains the following scripts:
+
+| Script   | Description                                                                 |
+|----------|-----------------------------------------------------------------------------|
+| `td`     | Shows a dashboard of today's and overdue tasks in a tabular format.         |
+| `add`    | Adds a new task with optional priority, project, context, due date, and repeat interval. |
+| `md`     | Marks a task as completed by its line number.                               |
+| `ar`     | Archives all completed tasks (lines starting with `x `) to `done.txt`.      |
+| `repeat` | Schedules recurring tasks (daily, weekly, monthly) based on repeat tags.    |
+
+---
 
 ## 📥 Installation
 
@@ -48,6 +64,8 @@ Built around the [`todo.txt`](https://github.com/todotxt/todo.txt) convention wi
    sudo ln -s /path/to/todo-scripts/bin/td /usr/local/bin/td
    sudo ln -s /path/to/todo-scripts/bin/add /usr/local/bin/add
    sudo ln -s /path/to/todo-scripts/bin/md /usr/local/bin/md
+   sudo ln -s /path/to/todo-scripts/bin/ar /usr/local/bin/ar
+   sudo ln -s /path/to/todo-scripts/bin/repeat /usr/local/bin/repeat
    ```
 
 3. **Reload your shell configuration:**
@@ -99,14 +117,16 @@ Line   | Created    | Due Date     | Task
 Add new tasks to your todo list:
 
 ```bash
-add "Task description" [+project] [@context] [due:YYYY-MM-DD]
+add "Task description" [+project] [@context] [due:YYYY-MM-DD] [repeat:daily|weekly|monthly]
 ```
 
 **Options:**
 - `-p <priority>`: Set priority (A-Z)
+- `-r <interval>`: Set repeat interval (`daily`, `weekly`, `monthly`)
 - `+project`: Add project tag
 - `@context`: Add context tag
 - `due:YYYY-MM-DD`: Set due date (optional, defaults to today)
+- `repeat:daily|weekly|monthly`: Add repeat tag directly
 
 **Examples:**
 ```bash
@@ -122,8 +142,11 @@ add "Review code" +work @urgent
 # With custom due date
 add "Submit report" +work due:2024-01-20
 
+# With repeat interval
+add -r weekly "Take out trash"
+
 # Complete example
-add -p A "Prepare presentation" +work @meeting due:2024-01-18
+add -p A -r monthly "Prepare report" +work @meeting due:2024-01-18
 ```
 
 ### Mark Tasks Complete (`md`)
@@ -145,6 +168,31 @@ md 3
 ✅ Marked as done: x 2024-01-15 2024-01-10 Review project proposal due:2024-01-15
 ```
 
+### Archive Completed Tasks (`ar`)
+
+Move all completed tasks (lines starting with `x `) from `todo.txt` to `done.txt`:
+
+```bash
+ar
+```
+
+**Output:**
+```
+✅ Archived 2 completed task(s) to done.txt.
+```
+
+### Recurring Tasks (`repeat`)
+
+Automatically add new instances of recurring tasks based on `repeat:daily`, `repeat:weekly`, or `repeat:monthly` tags:
+
+```bash
+repeat
+```
+
+This script scans your `todo.txt` for tasks with a repeat tag and due date, and adds the next occurrence when the current one is completed.
+
+---
+
 ### Getting Help
 
 All scripts support traditional help flags:
@@ -159,6 +207,12 @@ add --help
 
 md -h
 md --help
+
+ar -h
+ar --help
+
+repeat -h
+repeat --help
 ```
 
 **Help output includes:**
@@ -180,6 +234,8 @@ md --help
    cat bin/td
    cat bin/add
    cat bin/md
+   cat bin/ar
+   cat bin/repeat
    ```
 
 3. **Check if todo.txt exists**:
